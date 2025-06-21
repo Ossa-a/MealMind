@@ -7,6 +7,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\StudyNoteController;
 use App\Http\Controllers\FlashcardController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\UserProfileController;
 
 // Public routes
 Route::post('register', [AuthController::class, 'register']);
@@ -18,5 +19,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('user', [AuthController::class, 'user']);
 
-    
+    // User Profile routes
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [UserProfileController::class, 'show']);
+        Route::post('/', [UserProfileController::class, 'store']);
+        Route::put('/', [UserProfileController::class, 'update']);
+        Route::delete('/', [UserProfileController::class, 'destroy']);
+    });
 }); 
