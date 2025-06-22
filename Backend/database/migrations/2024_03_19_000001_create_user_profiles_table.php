@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('user_profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->text('goals')->nullable();
+            $table->text('goals');
             $table->string('diet_type')->nullable();
             $table->json('allergies')->nullable();
             $table->integer('daily_calories_target')->nullable();
-            $table->float('weight')->nullable();
-            $table->float('height')->nullable();
-            $table->enum('activity_level', ['sedentary', 'light', 'moderate', 'very_active'])->nullable();
-            $table->enum('gender', ['male', 'female', 'other'])->nullable();
-            $table->date('date_of_birth')->nullable();
+            $table->float('weight');
+            $table->float('height');
+            $table->enum('activity_level', ['sedentary', 'light', 'moderate', 'very active', 'extra active']);
+            $table->enum('gender', ['male', 'female', 'other']);
+            $table->date('date_of_birth');
             $table->timestamps();
         });
     }

@@ -155,7 +155,7 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "profile"]
 						},
-						"description": "Get the authenticated user's profile"
+						"description": "Get the authenticated user's profile. The response includes the AI-calculated daily calorie target."
 					}
 				},
 				{
@@ -186,14 +186,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"goals\": \"Lose weight and build muscle\",\n    \"diet_type\": \"keto\",\n    \"allergies\": [\"peanuts\", \"shellfish\"],\n    \"daily_calories_target\": 2000,\n    \"weight\": 75.5,\n    \"height\": 180,\n    \"activity_level\": \"moderate\",\n    \"gender\": \"male\",\n    \"date_of_birth\": \"1990-01-01\"\n}"
+							"raw": "{\n    \"goals\": \"Lose weight and build muscle\",\n    \"diet_type\": \"keto\",\n    \"allergies\": [\"peanuts\", \"shellfish\"],\n    \"weight\": 75.5,\n    \"height\": 180,\n    \"activity_level\": \"moderate\",\n    \"gender\": \"male\",\n    \"date_of_birth\": \"1990-01-01\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/profile",
 							"host": ["{{base_url}}"],
 							"path": ["api", "profile"]
 						},
-						"description": "Create a new profile for the authenticated user"
+						"description": "Create a new profile for the authenticated user. The daily calorie target will be automatically calculated by AI based on the provided information. You can optionally provide 'daily_calories_target' to override the AI calculation."
 					}
 				},
 				{
@@ -224,14 +224,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"goals\": \"Updated goals: Maintain weight and improve strength\",\n    \"daily_calories_target\": 2200,\n    \"weight\": 73.5,\n    \"activity_level\": \"very_active\"\n}"
+							"raw": "{\n    \"goals\": \"Maintain weight and improve strength\",\n    \"weight\": 73.5,\n    \"activity_level\": \"very_active\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/profile",
 							"host": ["{{base_url}}"],
 							"path": ["api", "profile"]
 						},
-						"description": "Update the authenticated user's profile (partial updates supported)"
+						"description": "Update the authenticated user's profile. When updating weight, height, activity_level, gender, date_of_birth, or goals, the daily calorie target will be automatically recalculated by AI unless manually specified."
 					}
 				},
 				{
@@ -264,7 +264,7 @@
 					}
 				}
 			],
-			"description": "User profile management endpoints"
+			"description": "User profile management endpoints with AI-powered calorie calculations"
 		}
 	],
 	"variable": [
