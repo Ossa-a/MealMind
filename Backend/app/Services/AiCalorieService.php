@@ -22,7 +22,7 @@ class AiCalorieService
             $weight = $profileData['weight'] ?? null;
             $height = $profileData['height'] ?? null;
             $activityLevel = $profileData['activity_level'] ?? UserProfile::ACTIVITY_MODERATE;
-            $goals = $profileData['goals'] ?? 'maintain weight';
+            $goals = $profileData['goals'] ?? 'maintain_weight';
             $dateOfBirth = $profileData['date_of_birth'] ?? null;
             $dietType = $profileData['diet_type'] ?? null;
 
@@ -52,10 +52,10 @@ class AiCalorieService
             $calories = $bmr * $profile->getActivityMultiplier();
             Log::info('Applied activity multiplier:', ['tdee' => $calories]);
 
-            // Determine goal adjustment
-            $hasWeightLossGoal = stripos($goals, 'lose weight') !== false;
-            $hasMuscleGoal = stripos($goals, 'build muscle') !== false;
-            $hasWeightGainGoal = stripos($goals, 'gain weight') !== false;
+            // Determine goal adjustment using enum values
+            $hasWeightLossGoal = $goals === 'lose_weight';
+            $hasMuscleGoal = $goals === 'gain_muscle';
+            $hasWeightGainGoal = false; // No separate gain_weight enum, only gain_muscle
 
             // Adjust based on goals and BMI
             if ($hasWeightLossGoal) {
@@ -67,25 +67,18 @@ class AiCalorieService
                 } else {
                     $deficit = 0.10; // 10% deficit for normal weight
                 }
-
-                // Reduce deficit if also building muscle
-                if ($hasMuscleGoal) {
-                    $deficit *= 0.75; // Reduce deficit by 25%
-                }
-
                 $calories *= (1 - $deficit);
                 Log::info('Applied weight loss adjustment:', ['deficit' => $deficit, 'calories' => $calories]);
-            } elseif ($hasWeightGainGoal || $hasMuscleGoal) {
+            } elseif ($hasMuscleGoal) {
                 // Lower surplus for higher BMI
                 if ($bmi > 25) {
                     $surplus = 0.05; // 5% surplus for overweight
                 } else {
                     $surplus = 0.10; // 10% surplus for normal/underweight
                 }
-
                 $calories *= (1 + $surplus);
-                Log::info('Applied weight gain adjustment:', ['surplus' => $surplus, 'calories' => $calories]);
-            }
+                Log::info('Applied muscle gain adjustment:', ['surplus' => $surplus, 'calories' => $calories]);
+            } // maintain_weight: no adjustment
 
             // Adjust for diet type
             if ($dietType === 'keto') {

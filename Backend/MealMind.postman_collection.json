@@ -186,14 +186,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"goals\": \"Lose weight and build muscle\",\n    \"diet_type\": \"keto\",\n    \"allergies\": [\"peanuts\", \"shellfish\"],\n    \"weight\": 75.5,\n    \"height\": 180,\n    \"activity_level\": \"moderate\",\n    \"gender\": \"male\",\n    \"date_of_birth\": \"1990-01-01\"\n}"
+							"raw": "{\n    \"goals\": \"lose_weight\",\n    \"diet_type\": \"keto\",\n    \"allergies\": [\"peanuts\", \"shellfish\"],\n    \"weight\": 75.5,\n    \"height\": 180,\n    \"activity_level\": \"moderate\",\n    \"gender\": \"male\",\n    \"date_of_birth\": \"1990-01-01\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/profile",
 							"host": ["{{base_url}}"],
 							"path": ["api", "profile"]
 						},
-						"description": "Create a new profile for the authenticated user. The daily calorie target will be automatically calculated by AI based on the provided information. You can optionally provide 'daily_calories_target' to override the AI calculation."
+						"description": "Create a new profile for the authenticated user. The daily calorie target will be automatically calculated by AI based on the provided information. You can optionally provide 'daily_calories_target' to override the AI calculation.\n\nThe 'goals' field must be one of: 'lose_weight', 'gain_muscle', or 'maintain_weight'."
 					}
 				},
 				{
@@ -224,7 +224,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"goals\": \"Maintain weight and improve strength\",\n    \"weight\": 73.5,\n    \"activity_level\": \"very_active\"\n}"
+							"raw": "{\n    \"goals\": \"maintain_weight\",\n    \"weight\": 73.5,\n    \"activity_level\": \"very_active\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/profile",
@@ -265,6 +265,50 @@
 				}
 			],
 			"description": "User profile management endpoints with AI-powered calorie calculations"
+		},
+		{
+			"name": "Meal Plans",
+			"item": [
+				{
+					"name": "Generate Meal Plan",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/meal-plan/generate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "meal-plan", "generate"]
+						},
+						"description": "Generate a personalized meal plan for the authenticated user using Gemini AI. The plan is based on the user's profile (calories, diet type, allergies, etc.) and includes meals for each day of the week (breakfast, lunch, dinner, snack)."
+					}
+				}
+			],
+			"description": "AI-powered meal plan generation using Gemini 2.5 Flash"
 		}
 	],
 	"variable": [

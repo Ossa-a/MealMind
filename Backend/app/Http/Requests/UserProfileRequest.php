@@ -24,10 +24,10 @@ class UserProfileRequest extends FormRequest
     {
         return [
             'goals' => 'required|string|max:1000',
-            'diet_type' => 'nullable|string|max:50',
+            'diet_type' => 'required|string|max:50',
             'allergies' => 'nullable|array',
             'allergies.*' => 'string|max:50',
-            'daily_calories_target' => 'nullable|integer|min:500|max:10000',
+            'daily_calories_target' => 'integer|min:500|max:10000',
             'weight' => 'required|numeric|min:20|max:500',
             'height' => 'required|numeric|min:50|max:300',
             'activity_level' => 'required|in:' . implode(',', UserProfile::getActivityLevels()),

@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('user_profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->text('goals');
-            $table->string('diet_type')->nullable();
+            $table->enum('goals', ['lose_weight', 'gain_muscle', 'maintain_weight']);
+            $table->string('diet_type');
             $table->json('allergies')->nullable();
-            $table->integer('daily_calories_target')->nullable();
+            $table->integer('daily_calories_target');
             $table->float('weight');
             $table->float('height');
             $table->enum('activity_level', ['sedentary', 'light', 'moderate', 'very active', 'extra active']);
-            $table->enum('gender', ['male', 'female', 'other']);
+            $table->enum('gender', ['male', 'female']);
             $table->date('date_of_birth');
             $table->timestamps();
         });

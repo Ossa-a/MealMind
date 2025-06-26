@@ -48,8 +48,8 @@ return [
 
     'gemini' => [
         'api_key' => env('GEMINI_API_KEY'),
-        'model' => env('GEMINI_MODEL', 'gemini-pro'),
-        'endpoint' => env('GEMINI_ENDPOINT', 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent'),
+        'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+        'endpoint' => env('GEMINI_ENDPOINT', 'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent'),
     ],
 
 ];

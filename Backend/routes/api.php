@@ -8,6 +8,7 @@ use App\Http\Controllers\StudyNoteController;
 use App\Http\Controllers\FlashcardController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\MealPlanController;
 
 // Public routes
 Route::post('register', [AuthController::class, 'register']);
@@ -26,4 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/', [UserProfileController::class, 'update']);
         Route::delete('/', [UserProfileController::class, 'destroy']);
     });
+
+    // Meal Plan generation route
+    Route::post('meal-plan/generate', [MealPlanController::class, 'generate']);
 }); 
