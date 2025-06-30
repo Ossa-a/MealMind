@@ -28,6 +28,11 @@ interface AuthResponse {
   message: string
 }
 
+// Actual backend response format
+interface LoginResponse {
+  access_token: string
+}
+
 interface User {
   id: number
   name: string
@@ -53,17 +58,50 @@ class AuthService {
   }
 
   async login(data: LoginRequest): Promise<AuthResponse> {
-    const response = await apiClient.request("/api/login", {
+    const response: LoginResponse = await apiClient.request("/api/login", {
       method: "POST",
       body: JSON.stringify(data),
     })
 
-    if (response.success && response.data.token) {
-      apiClient.setAuthToken(response.data.token)
-      this.setUserData(response.data.user)
+    // Handle the actual backend response format
+    if (response && response.access_token) {
+      apiClient.setAuthToken(response.access_token)
+      
+      // Get user data after successful login
+      try {
+        const userData = await this.getCurrentUser()
+        this.setUserData(userData)
+        
+        // Return a compatible response format
+        return {
+          success: true,
+          data: {
+            user: userData,
+            token: response.access_token
+          },
+          message: "Login successful"
+        }
+      } catch (error) {
+        // If we can't get user data, still consider login successful
+        return {
+          success: true,
+          data: {
+            user: {
+              id: 0,
+              name: "User",
+              email: data.email,
+              email_verified_at: null,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            },
+            token: response.access_token
+          },
+          message: "Login successful"
+        }
+      }
     }
 
-    return response
+    throw new AuthError("Login failed - no token received")
   }
 
   async logout(): Promise<void> {
@@ -83,12 +121,12 @@ class AuthService {
     const response = await apiClient.request("/api/user", {
       method: "GET",
     })
-
-    if (response.data) {
-      this.setUserData(response.data)
-      return response.data
+    // Accept both { data: { ...user } } and { ...user }
+    const user = response?.data || response
+    if (user && user.id) {
+      this.setUserData(user)
+      return user
     }
-
     throw new AuthError("Failed to get user data")
   }
 
@@ -109,6 +147,12 @@ class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getAuthToken()
+  }
+
+  setAuthToken(token: string): void {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("auth_token", token)
+    }
   }
 
   private setUserData(user: User): void {

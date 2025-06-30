@@ -64,6 +64,11 @@ class ApiClient {
         throw new ApiError(errorData.message || `Request failed with status ${response.status}`, response.status)
       }
 
+      // Handle 204 No Content responses
+      if (response.status === 204) {
+        return null
+      }
+
       return await response.json()
     } catch (error) {
       if (error instanceof ValidationError || error instanceof AuthError || error instanceof ApiError) {

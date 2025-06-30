@@ -84,7 +84,12 @@ export default function DashboardPage() {
   }, [])
 
   useEffect(() => {
-    loadUserData()
+    // Get user from localStorage (set by AuthGuard)
+    if (typeof window !== "undefined") {
+      const userData = localStorage.getItem("user_data")
+      setUser(userData ? JSON.parse(userData) : null)
+    }
+    loadProfile()
   }, [])
 
   useEffect(() => {
@@ -101,16 +106,11 @@ export default function DashboardPage() {
     }
   }, [profile])
 
-  const loadUserData = async () => {
+  const loadProfile = async () => {
     try {
       setIsLoading(true)
-
-      // Load user info and profile in parallel
-      const [userData, profileData] = await Promise.all([authService.getCurrentUser(), profileService.getProfile()])
-
-      setUser(userData)
+      const profileData = await profileService.getProfile()
       setProfile(profileData)
-
       if (!profileData) {
         // User doesn't have a profile, redirect to onboarding
         router.push("/onboarding")

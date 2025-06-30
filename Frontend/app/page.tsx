@@ -120,17 +120,16 @@ export default function LandingPage() {
         showErrorToast("Login failed", "Please try again later")
       }
     } finally {
-      removeToast(loadingToastId)
+      if (loadingToastId) removeToast(loadingToastId)
     }
   }
 
   const handleRegister = async (registerData: RegisterRequest) => {
+    const loadingToastId = showLoadingToast("Creating your account...", "Setting up your MealMind profile")
     try {
-      const loadingToastId = showLoadingToast("Creating your account...", "Setting up your MealMind profile")
-
       const response = await authService.register(registerData)
 
-      removeToast(loadingToastId)
+      if (loadingToastId) removeToast(loadingToastId)
 
       if (response.success) {
         showSuccessToast("Account created!", `Welcome to MealMind, ${response.data.user.name}`)
