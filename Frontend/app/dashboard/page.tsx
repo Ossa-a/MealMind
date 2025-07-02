@@ -145,7 +145,6 @@ export default function DashboardPage() {
 
       // Here you would typically navigate to a meal plan view page
       // or update the UI to show the generated plan
-      console.log("Generated meal plan:", mealPlan)
     } catch (error) {
       if (error instanceof ApiError) {
         showErrorToast("Failed to generate meal plan", error.message)
@@ -215,7 +214,7 @@ export default function DashboardPage() {
       description: "See your active meal schedule",
       icon: Eye,
       color: "from-green-500 to-emerald-500",
-      onClick: () => showInfoToast("Coming soon!", "Meal plan viewing is being developed"),
+      onClick: () => router.push("/dashboard/plan"),
     },
     {
       title: "Update Profile",
@@ -235,9 +234,13 @@ export default function DashboardPage() {
 
   return (
     <AuthGuard requireAuth={true}>
-      <div className="min-h-screen bg-gradient-to-br from-orange-900 via-red-900 to-pink-900">
-        <div className="absolute inset-0 bg-black/40" />
-
+      <div className="relative min-h-screen">
+        {/* Background gradient and overlay */}
+        <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-900 via-red-900 to-pink-900" />
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
+        {/* Main content */}
         <div className="relative z-10">
           {/* Header */}
           <motion.header

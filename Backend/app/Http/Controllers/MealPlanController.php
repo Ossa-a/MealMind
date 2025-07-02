@@ -46,4 +46,21 @@ class MealPlanController extends Controller
             return response()->json(['message' => 'Failed to generate meal plan'], 500);
         }
     }
+
+    /**
+     * Get the latest meal plan for the authenticated user
+     */
+    public function getCurrent(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $plan = $user->mealPlans()->with('meals')->orderByDesc('week_start_date')->first();
+        if (!$plan) {
+            return response()->json([
+                'message' => 'No meal plan found for user'
+            ], 404);
+        }
+        return response()->json([
+            'plan' => $plan
+        ]);
+    }
 } 

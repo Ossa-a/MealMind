@@ -306,6 +306,35 @@
 						},
 						"description": "Generate a personalized meal plan for the authenticated user using Gemini AI. The plan is based on the user's profile (calories, diet type, allergies, etc.) and includes meals for each day of the week (breakfast, lunch, dinner, snack)."
 					}
+				},
+				{
+					"name": "Get Current Meal Plan",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/meal-plan/current",
+							"host": ["{{base_url}}"],
+							"path": ["api", "meal-plan", "current"]
+						},
+						"description": "Get the latest meal plan for the authenticated user, including all meals. Returns 404 if no plan exists."
+					}
 				}
 			],
 			"description": "AI-powered meal plan generation using Gemini 2.5 Flash"

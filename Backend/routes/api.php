@@ -30,4 +30,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Meal Plan generation route
     Route::post('meal-plan/generate', [MealPlanController::class, 'generate']);
+    Route::get('meal-plan/current', [MealPlanController::class, 'getCurrent']);
 }); 

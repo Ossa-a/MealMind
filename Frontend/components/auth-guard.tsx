@@ -55,8 +55,6 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
     try {
       const token = authService.getAuthToken();
       const userData = authService.getUserData();
-      console.log("AuthGuard token:", token);
-      console.log("AuthGuard userData:", userData);
 
       if (!authService.isAuthenticated()) {
         if (requireAuth) {
@@ -71,7 +69,6 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
 
       // Verify token with backend
       const user = await authService.getCurrentUser();
-      console.log("AuthGuard getCurrentUser:", user);
       setIsAuthenticated(true)
     } catch (error) {
       // Token invalid, redirect to login

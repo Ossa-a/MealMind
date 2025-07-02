@@ -3,7 +3,7 @@ import { apiClient } from "./api-client"
 interface CreateProfileRequest {
   goals: "lose_weight" | "gain_muscle" | "maintain_weight"
   diet_type: string
-  allergies: string[]
+  allergies: string[] | null
   weight: number
   height: number
   activity_level: "sedentary" | "light" | "moderate" | "very_active"
@@ -28,25 +28,29 @@ interface ProfileResponse {
 
 class ProfileService {
   async createProfile(data: CreateProfileRequest): Promise<Profile> {
-    const response: ProfileResponse = await apiClient.request("/api/profile", {
+    const response = await apiClient.request("/api/profile", {
       method: "POST",
       body: JSON.stringify(data),
     })
-
-    return response.data
+    // Accept { data: { ...profile } } or { profile: { ...profile } }
+    if (response?.data) return response.data
+    if (response?.profile) return response.profile
+    throw new Error("Profile creation response missing profile data")
   }
 
   async getProfile(): Promise<Profile | null> {
     try {
-      const response: ProfileResponse = await apiClient.request("/api/profile", {
+      const response = await apiClient.request("/api/profile", {
         method: "GET",
-      })
-      return response.data
+      });
+      // Accept { data: { ...profile } } or { ...profile }
+      const profile = response?.data?.id ? response.data : response?.id ? response : null;
+      return profile;
     } catch (error: any) {
       if (error.status === 404) {
-        return null // Profile doesn't exist yet
+        return null; // Profile doesn't exist yet
       }
-      throw error
+      throw error;
     }
   }
 

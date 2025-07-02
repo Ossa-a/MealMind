@@ -106,8 +106,7 @@ export default function LandingPage() {
 
         // Check if user has profile
         const profile = await profileService.getProfile()
-        console.log("Profile after login:", profile)
-        if (profile) {
+        if (profile && profile.id) {
           router.push("/dashboard")
         } else {
           router.push("/onboarding")
@@ -136,9 +135,9 @@ export default function LandingPage() {
 
       if (loadingToastId) removeToast(loadingToastId)
 
-      if (response.success) {
-        showSuccessToast("Account created!", `Welcome to MealMind, ${response.data.user.name}`)
-        router.push("/onboarding")
+      if (response.message) {
+        showSuccessToast("Account created!", "You can now log in to MealMind.")
+        setIsLogin(true)
       }
     } catch (error) {
       if (error instanceof ValidationError) {

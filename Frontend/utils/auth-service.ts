@@ -121,7 +121,6 @@ class AuthService {
     const response = await apiClient.request("/api/user", {
       method: "GET",
     })
-    console.log("getCurrentUser /api/user response:", response);
 
     // Accept { data: { ...user } }, { user: { ...user } }, or { ...user }
     const user =

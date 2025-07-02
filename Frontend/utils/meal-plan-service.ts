@@ -18,6 +18,13 @@ class MealPlanService {
 
     return response.data
   }
+
+  async getCurrentMealPlan(): Promise<any> {
+    const response = await apiClient.request("/api/meal-plan/current", {
+      method: "GET",
+    })
+    return response.plan
+  }
 }
 
 export const mealPlanService = new MealPlanService()

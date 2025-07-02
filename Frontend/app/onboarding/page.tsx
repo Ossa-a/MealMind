@@ -147,9 +147,12 @@ export default function OnboardingPage() {
       )
 
       // Prepare allergies array
-      const allergies = [...formData.allergies]
+      let allergies: string[] | null = [...formData.allergies]
       if (formData.customAllergy.trim()) {
         allergies.push(formData.customAllergy.trim())
+      }
+      if (allergies.length === 0) {
+        allergies = null
       }
 
       // Transform form data to match API format
@@ -351,8 +354,8 @@ export default function OnboardingPage() {
                       onClick={() => setFormData({ ...formData, gender })}
                       className={
                         formData.gender === gender
-                          ? "bg-gradient-to-r from-orange-500 to-red-500"
-                          : "border-white/20 text-white hover:bg-white/10"
+                          ? "bg-gradient-to-r from-orange-500 to-red-500 text-white"
+                          : "bg-neutral-800 text-white border-white/20 hover:bg-neutral-700 hover:text-white"
                       }
                     >
                       {gender.charAt(0).toUpperCase() + gender.slice(1)}
@@ -400,22 +403,24 @@ export default function OnboardingPage() {
                   <Card
                     className={`cursor-pointer transition-all duration-300 ${
                       formData.activity_level === activity.id
-                        ? "bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-500"
-                        : "bg-white/5 border-white/10 hover:bg-white/10"
+                        ? "bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-500 text-orange-400"
+                        : "bg-white/5 border-white/10 hover:bg-white/10 text-white"
                     }`}
                     onClick={() => setFormData({ ...formData, activity_level: activity.id })}
                   >
                     <CardContent className="p-6">
                       <div className="flex items-center gap-4">
-                        <div className="text-3xl">{activity.icon}</div>
+                        <div className="text-3xl">
+                          {activity.icon}
+                        </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-xl font-semibold text-white">{activity.title}</h3>
-                            <span className="text-sm bg-orange-500/20 text-orange-300 px-2 py-1 rounded">
+                            <h3 className={`text-xl font-semibold ${formData.activity_level === activity.id ? "text-orange-400" : "text-white"}`}>{activity.title}</h3>
+                            <span className={`text-sm bg-orange-500/20 px-2 py-1 rounded ${formData.activity_level === activity.id ? "text-orange-400" : "text-orange-300"}`}>
                               {activity.multiplier}
                             </span>
                           </div>
-                          <p className="text-gray-300">{activity.description}</p>
+                          <p className={formData.activity_level === activity.id ? "text-orange-300" : "text-gray-300"}>{activity.description}</p>
                         </div>
                       </div>
                     </CardContent>
