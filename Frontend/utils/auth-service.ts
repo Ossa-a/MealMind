@@ -121,13 +121,23 @@ class AuthService {
     const response = await apiClient.request("/api/user", {
       method: "GET",
     })
-    // Accept both { data: { ...user } } and { ...user }
-    const user = response?.data || response
+    console.log("getCurrentUser /api/user response:", response);
+
+    // Accept { data: { ...user } }, { user: { ...user } }, or { ...user }
+    const user =
+      response?.data?.id
+        ? response.data
+        : response?.user?.id
+        ? response.user
+        : response?.id
+        ? response
+        : null;
+
     if (user && user.id) {
-      this.setUserData(user)
-      return user
+      this.setUserData(user);
+      return user;
     }
-    throw new AuthError("Failed to get user data")
+    throw new AuthError("Failed to get user data");
   }
 
   getAuthToken(): string | null {

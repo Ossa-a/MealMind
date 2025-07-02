@@ -44,6 +44,7 @@ function LoadingScreen() {
 export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [hasLoggedOut, setHasLoggedOut] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -52,6 +53,11 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
 
   const checkAuthStatus = async () => {
     try {
+      const token = authService.getAuthToken();
+      const userData = authService.getUserData();
+      console.log("AuthGuard token:", token);
+      console.log("AuthGuard userData:", userData);
+
       if (!authService.isAuthenticated()) {
         if (requireAuth) {
           router.push("/")
@@ -64,15 +70,19 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
       }
 
       // Verify token with backend
-      await authService.getCurrentUser()
+      const user = await authService.getCurrentUser();
+      console.log("AuthGuard getCurrentUser:", user);
       setIsAuthenticated(true)
     } catch (error) {
       // Token invalid, redirect to login
-      await authService.logout()
-      if (requireAuth) {
-        router.push("/")
-      } else {
-        setIsAuthenticated(false)
+      if (!hasLoggedOut) {
+        setHasLoggedOut(true)
+        await authService.logout()
+        if (requireAuth) {
+          router.push("/")
+        } else {
+          setIsAuthenticated(false)
+        }
       }
     } finally {
       setIsLoading(false)
