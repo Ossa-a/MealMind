@@ -67,6 +67,23 @@ const QuickAction = ({ title, description, icon: Icon, color, onClick, disabled 
   </motion.div>
 )
 
+// --- Consumed Calories Helpers ---
+type EatenMealsMap = { [planDayKey: string]: number[] }
+function getPlanDayKey(weekStart: string, dayOfWeek: number) {
+  return `${weekStart.slice(0, 10)}-${dayOfWeek}`
+}
+function getEatenMeals(planDayKey: string): number[] {
+  if (typeof window === "undefined") return []
+  const data = localStorage.getItem("eaten_meals")
+  if (!data) return []
+  try {
+    const parsed: EatenMealsMap = JSON.parse(data)
+    return parsed[planDayKey] || []
+  } catch {
+    return []
+  }
+}
+
 export default function DashboardPage() {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -74,6 +91,8 @@ export default function DashboardPage() {
   const [isGeneratingMealPlan, setIsGeneratingMealPlan] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [calorieProgress, setCalorieProgress] = useState(0)
+  const [consumedCalories, setConsumedCalories] = useState(0)
+  const [plan, setPlan] = useState<any>(null)
 
   const router = useRouter()
   const { showSuccessToast, showErrorToast, showLoadingToast, removeToast, showInfoToast } = useToast()
@@ -90,21 +109,29 @@ export default function DashboardPage() {
       setUser(userData ? JSON.parse(userData) : null)
     }
     loadProfile()
+    loadPlan()
   }, [])
 
   useEffect(() => {
     // Animate calorie progress after profile loads
-    if (profile) {
+    if (profile && plan) {
       const timer = setTimeout(() => {
-        // Calculate progress based on consumed vs target calories
-        const consumed = 1680 // This would come from meal tracking
+        // Calculate today's consumed calories from eaten meals
+        const today = new Date()
+        const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay() // Sunday=7
+        const planDayKey = getPlanDayKey(plan.week_start_date, dayOfWeek)
+        const eatenMealIds = getEatenMeals(planDayKey)
+        // Find meals for today in the plan
+        const mealsToday = plan.meals ? plan.meals.filter((m: any) => m.pivot.day_of_week === dayOfWeek) : []
+        const calories = mealsToday.filter((m: any) => eatenMealIds.includes(m.id)).reduce((sum: number, m: any) => sum + (m.calories || 0), 0)
+        setConsumedCalories(calories)
         const target = profile.daily_calories_target
-        const progress = Math.min((consumed / target) * 100, 100)
+        const progress = Math.min((calories / target) * 100, 100)
         setCalorieProgress(progress)
       }, 500)
       return () => clearTimeout(timer)
     }
-  }, [profile])
+  }, [profile, plan])
 
   const loadProfile = async () => {
     try {
@@ -167,11 +194,21 @@ export default function DashboardPage() {
     }
   }
 
+  // Load the current meal plan for calorie calculation
+  const loadPlan = async () => {
+    try {
+      const planData = await mealPlanService.getCurrentMealPlan()
+      setPlan(planData)
+    } catch (error) {
+      // ignore for now
+    }
+  }
+
   // Update stats to use real profile data
   const stats = [
     {
       title: "Daily Calories",
-      value: profile ? `1,680 / ${profile.daily_calories_target.toLocaleString()}` : "Loading...",
+      value: profile ? `${consumedCalories.toLocaleString()} / ${profile.daily_calories_target.toLocaleString()}` : "Loading...",
       change: 12,
       icon: Target,
       color: "from-orange-500 to-red-500",
@@ -333,7 +370,7 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Progress</span>
-                      <span className="text-white font-medium">{calorieProgress}% of daily goal</span>
+                      <span className="text-white font-medium">{Math.round(calorieProgress)}% of daily goal</span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-3">
                       <motion.div
@@ -344,8 +381,8 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div className="flex justify-between text-sm text-gray-400">
-                      <span>1,680 consumed</span>
-                      <span>{profile ? (profile.daily_calories_target - 1680).toLocaleString() : "0"} remaining</span>
+                      <span>{consumedCalories.toLocaleString()} consumed</span>
+                      <span>{profile ? (profile.daily_calories_target - consumedCalories).toLocaleString() : "0"} remaining</span>
                     </div>
                   </div>
                 </CardContent>
